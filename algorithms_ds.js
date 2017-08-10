@@ -294,7 +294,6 @@ console.log(mergeSort([5,1,6,7,8,22,14,-5,22222,3]));
 // O(V + E) V for number of vertices/nodes added to the queue, E for number of edges you follow
 
 
-//directed graph: edges only go one way
 var graph = {
   me: ['alice', 'bob', 'claire', 'anuj'],
   bob: ['anuj', 'peggy'],
@@ -306,6 +305,7 @@ var graph = {
   jonny:[]
 };
 
+var parents = {};
 
 var addArrToQueue = function(arr, queue) {
   arr.forEach(function(item) {
@@ -316,6 +316,7 @@ var addArrToQueue = function(arr, queue) {
 var alreadyChecked = [];
 var search_queue = [];
 addArrToQueue(graph.me, search_queue);
+addParent(graph.me, 'me');
 
 while (search_queue.length !== 0) {
   var person = search_queue.shift();
@@ -323,10 +324,11 @@ while (search_queue.length !== 0) {
   if (personRepeat === false) {
     var mangoSeller = personIsMangoSeller(person);
     if (mangoSeller) {
-      console.log(person);
+      findShortestPath(parents, 'me', person);
       break;
     } else {
       addArrToQueue(graph[person], search_queue);
+      addParent(graph[person], person);
       alreadyChecked.push(person);
     }
   }
@@ -340,6 +342,14 @@ function personIsMangoSeller(person) {
   }
 }
 
+function addParent(children, parent) {
+  children.forEach(function(child) {
+    if (!parents.hasOwnProperty(child)) {
+      parents[child] = parent;
+    }
+  });
+}
+
 function checkPerson(person, arr) {
   for (var i = 0; i < arr.length; i++) {
     if (arr[i] === person) {
@@ -348,6 +358,19 @@ function checkPerson(person, arr) {
   };
   return false;
 }
+
+
+function findShortestPath(parents, beginning, child) {
+  var path = [child];
+  while (child !== beginning) {
+    var parent = parents[child];
+    path.unshift(parent);
+    child = parent;
+  }
+  console.log(path);
+  return path;
+}
+
 
 /////////////////////////////
 //DIJKSTRA'S ALGORITHM
@@ -446,37 +469,3 @@ function findPath(parents) {
   
 
 console.log(findPath(parents));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
