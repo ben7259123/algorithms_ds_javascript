@@ -293,83 +293,86 @@ console.log(mergeSort([5,1,6,7,8,22,14,-5,22222,3]));
 //9. GRAPH & QUEUE DATA STRUCTURES, BREADTH-FIRST SEARCH
 // O(V + E) V for number of vertices/nodes added to the queue, E for number of edges you follow
 
+var graph = {};
 
-var graph = {
-  me: ['alice', 'bob', 'claire', 'anuj'],
-  bob: ['anuj', 'peggy'],
-  alice: ['peggy'],
-  claire: ['thom', 'jonny'],
-  anuj: [],
-  peggy: [],
-  thom: [],
-  jonny:[]
-};
+graph.bar = ['do', 're'];
+graph.do = ['mi', 'fa'];
+graph.mi = null;
+graph.fa = null;
+graph.re = ['sol', 'la'];
+graph.sol = ['ti'];
+graph.ti = ['foo'];
+graph.la = ['foo'];
+graph.foo = null;
 
 var parents = {};
 
-var addArrToQueue = function(arr, queue) {
-  arr.forEach(function(item) {
-    queue.push(item);
-  });
-};
+var queue = [];
+var checked = [];
 
-var alreadyChecked = [];
-var search_queue = [];
-addArrToQueue(graph.me, search_queue);
-addParent(graph.me, 'me');
-
-while (search_queue.length !== 0) {
-  var person = search_queue.shift();
-  var personRepeat = checkPerson(person, alreadyChecked);
-  if (personRepeat === false) {
-    var mangoSeller = personIsMangoSeller(person);
-    if (mangoSeller) {
-      findShortestPath(parents, 'me', person);
-      break;
-    } else {
-      addArrToQueue(graph[person], search_queue);
-      addParent(graph[person], person);
-      alreadyChecked.push(person);
-    }
-  }
+function pushToQueue(neighbors, queue) {
+    neighbors.forEach(function(neighbor) {
+    queue.push(neighbor);
+  }); 
 }
 
-function personIsMangoSeller(person) {
-  if (person.charAt(person.length - 1) === 'm') {
+function hasItBeenChecked(vertex) {
+  if (checked.includes(vertex)) {
     return true;
   } else {
     return false;
   }
 }
 
-function addParent(children, parent) {
+function setParent(children, parent, currentParents) {
   children.forEach(function(child) {
-    if (!parents.hasOwnProperty(child)) {
-      parents[child] = parent;
+    if (!currentParents.hasOwnProperty(child)) {
+      currentParents[child] = parent;  
     }
-  });
+  });  
 }
 
-function checkPerson(person, arr) {
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i] === person) {
-      return true;
-    }
-  };
-  return false;
-}
-
-
-function findShortestPath(parents, beginning, child) {
-  var path = [child];
+function findShortestPath(parents, beginning, end) {
+  var shortestPath = [end];
+  var child = end;
+  
   while (child !== beginning) {
     var parent = parents[child];
-    path.unshift(parent);
+    shortestPath.unshift(parent);
     child = parent;
-  }
-  console.log(path);
-  return path;
+  } 
+  return shortestPath;
 }
+
+function breadthFirstSearch(start, end, graph) {
+  //find shortest path from bar to foo
+  //push all of bar's neighbors to the queue
+  pushToQueue(graph[start], queue);
+  //make bar the parent of bar's neighbors 
+  setParent(graph[start], start, parents);
+
+  while (queue.length > 0) {
+    var vertex = queue.shift();
+    if (hasItBeenChecked(vertex) === false) {
+      if (vertex === 'foo') {
+        return findShortestPath(parents, start, end);
+        break;
+      } else {
+        //push vertex to checked
+        checked.push(vertex);
+        //push neighbors to queue
+        if (graph[vertex] !== null) {
+           pushToQueue(graph[vertex], queue);
+        //add vertex as parent to all of the neighbors 
+           setParent(graph[vertex], vertex, parents);
+        }
+      }
+    }
+  }
+}
+console.log(breadthFirstSearch('bar', 'foo', graph));
+
+
 
 
 /////////////////////////////
