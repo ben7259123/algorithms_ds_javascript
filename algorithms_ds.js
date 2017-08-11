@@ -354,7 +354,7 @@ function breadthFirstSearch(start, end, graph) {
   while (queue.length > 0) {
     var vertex = queue.shift();
     if (hasItBeenChecked(vertex) === false) {
-      if (vertex === 'foo') {
+      if (vertex === end) {
         return findShortestPath(parents, start, end);
         break;
       } else {
@@ -369,6 +369,7 @@ function breadthFirstSearch(start, end, graph) {
       }
     }
   }
+  return null;
 }
 console.log(breadthFirstSearch('bar', 'foo', graph));
 
